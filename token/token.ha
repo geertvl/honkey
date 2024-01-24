@@ -1,8 +1,30 @@
-type token_type = enum {
-    ASSIGN
+export type token_type = enum {
+    ILLEGAL,
+    EOF,
+
+    IDENT,
+    INT,
+
+    ASSIGN,
+    PLUS,
+
+    COMMA,
+    SEMICOLON,
+
+    LPAREN,
+    RPAREN,
+    LBRACE,
+    RBRACE,
+
+    FUNCTION,
+    LET
 };
 
-type token = struct {
-    ttype: token_type,
-    literal: str
+export type token = struct {
+    tok_type: token_type,
+    literal: rune
+};
+
+export fn new(tok_type: token_type, ch: rune) token = {
+    return token { tok_type = tok_type, literal = ch };
 };
