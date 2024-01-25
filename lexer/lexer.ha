@@ -1,5 +1,6 @@
 use token;
 use strings;
+use fmt;
 
 type lexer = struct {
     input: str,
@@ -31,16 +32,31 @@ fn read_char(l: *lexer) void = {
 };
 
 fn next_token(l: *lexer) token::token = {
+    let tok = token::token { tok_type = token::token_type::ILLEGAL, literal = ' ' };
+
     switch (l.ch) {
         case '=' =>
-            return token::new(token::token_type::ASSIGN, l.ch);
+            tok = token::new(token::token_type::ASSIGN, l.ch);
         case ';' =>
-            return token::new(token::token_type::SEMICOLON, l.ch);
+            tok = token::new(token::token_type::SEMICOLON, l.ch);
         case '(' => 
-            return token::new(token::token_type::LPAREN, l.ch);
+            tok = token::new(token::token_type::LPAREN, l.ch);
+        case ')' =>
+            tok = token::new(token::token_type::RPAREN, l.ch);
+        case ',' =>
+            tok = token::new(token::token_type::COMMA, l.ch);
+        case '+' =>
+            tok = token::new(token::token_type::PLUS, l.ch);
+        case '{' =>
+            tok = token::new(token::token_type::LBRACE, l.ch);
+        case '}' =>
+            tok = token::new(token::token_type::RBRACE, l.ch);
         case =>
-            return token::new(token::token_type::EOF, '\0');
+            tok = token::new(token::token_type::EOF, '\0');
     };
+
+    read_char(l);
+    return tok;
 };
 
 @test fn test_next_token() void = {
@@ -61,7 +77,11 @@ fn next_token(l: *lexer) token::token = {
     for (let i = 0z; i < len(tests); i += 1) {
         let tok = next_token(&l);
 
+        let test = tests[i];
+        assert(tok.tok_type == test.0, 
+            fmt::asprintf("tests[{}] - tokentype wrong. expected={}, got={}", 
+                i, 
+                token::token_str(test.0), 
+                token::token_str(tok.tok_type)));
     };
-
-    assert(input == "test", "input is correct");
 };
