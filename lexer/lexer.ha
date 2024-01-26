@@ -65,6 +65,14 @@ fn skip_whitespace(l: *lexer) void = {
     };
 };
 
+fn peek_char(l: *lexer) rune = {
+    if (l.read_position >= len(l.input)) {
+        return '\0';
+    } else {
+        return torune(l.input, l.read_position);
+    };
+};
+
 fn next_token(l: *lexer) token::token = {
     let tok = token::token { tok_type = token::token_type::ILLEGAL, literal = "" };
 
@@ -72,13 +80,27 @@ fn next_token(l: *lexer) token::token = {
 
     switch (l.ch) {
         case '=' =>
-            tok = token::new(token::token_type::ASSIGN, l.ch);
+            if (peek_char(l) == '=') {
+                let ch = l.ch;
+                read_char(l);
+                let literal = strings::fromrunes([ch, l.ch]);
+                tok = token::new_with_str(token::token_type::EQ, literal);
+            } else {    
+                tok = token::new(token::token_type::ASSIGN, l.ch);
+            };
         case ';' =>
             tok = token::new(token::token_type::SEMICOLON, l.ch);
         case '-' =>
             tok = token::new(token::token_type::MINUS, l.ch);
         case '!' =>
-            tok = token::new(token::token_type::BANG, l.ch);    
+            if (peek_char(l) == '=') {
+                let ch = l.ch;
+                read_char(l);
+                let literal = strings::fromrunes([ch, l.ch]);
+                tok = token::new_with_str(token::token_type::NOT_EQ, literal);
+            } else {
+                tok = token::new(token::token_type::BANG, l.ch);
+            };
         case '/' =>
             tok = token::new(token::token_type::SLASH, l.ch);
         case '*' =>
@@ -268,6 +290,36 @@ if (5 < 10) {
          (token::token_type::FALSE, "false"),
          (token::token_type::SEMICOLON, ";"),
          (token::token_type::RBRACE, "}"),
+    ];
+
+    let l = new(input);
+    for (let i = 0z; i < len(tests); i += 1) {
+        let tok = next_token(&l);
+
+        let test = tests[i];
+        assert(tok.tok_type == test.0, 
+            fmt::asprintf("tests[{}] - tokentype wrong. expected={}, got={}", 
+                i, 
+                token::token_str(test.0), 
+                token::token_str(tok.tok_type)));
+    };
+};
+
+@test fn test_next_token_comparing() void = {
+    let input = "
+10 == 10;
+10 != 9;   
+    ";
+
+    let tests: [](token::token_type, str) = [
+         (token::token_type::INT, "10"),
+         (token::token_type::EQ, "=="),
+         (token::token_type::INT, "10"),
+         (token::token_type::SEMICOLON, ";"),
+         (token::token_type::INT, "10"),
+         (token::token_type::NOT_EQ, "!="),
+         (token::token_type::INT, "9"),
+         (token::token_type::SEMICOLON, ";")
     ];
 
     let l = new(input);

@@ -48,3 +48,5 @@ In a switch, it is not assignable, and default value is the following:
 ```
 
 ---
+
+Function overloading does not work.

@@ -30,7 +30,10 @@ export type token_type = enum {
     FALSE,
     IF,
     ELSE,
-    RETURN
+    RETURN,
+
+    EQ,
+    NOT_EQ
 };
 
 export fn token_str(tok_type: token_type) str = {
@@ -85,6 +88,10 @@ export fn token_str(tok_type: token_type) str = {
             return "ELSE";
         case token_type::RETURN =>
             return "RETURN";
+        case token_type::EQ =>
+            return "==";
+        case token_type::NOT_EQ =>
+            return "!=";
     };
 };
 
@@ -100,6 +107,10 @@ export fn to_string(ch: rune) str = {
 
 export fn new(tok_type: token_type, ch: rune) token = {
     return token { tok_type = tok_type, literal = to_string(ch) };
+};
+
+export fn new_with_str(tok_type: token_type, ch: str) token = {
+    return token { tok_type = tok_type, literal = ch };
 };
 
 export type keyword = struct {
