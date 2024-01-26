@@ -240,3 +240,45 @@ let result = add(five, ten);";
                 token::token_str(tok.tok_type)));
     };
 };
+
+@test fn test_next_token_conditions() void = {
+    let input = "
+if (5 < 10) {
+    return true;
+} else {
+    return false;
+}    
+    ";
+
+    let tests: [](token::token_type, str) = [
+         (token::token_type::IF, "if"),
+         (token::token_type::LPAREN, "("),
+         (token::token_type::INT, "5"),
+         (token::token_type::LT, "<"),
+         (token::token_type::INT, "10"),
+         (token::token_type::RPAREN, ")"),
+         (token::token_type::LBRACE, "{"),
+         (token::token_type::RETURN, "return"),
+         (token::token_type::TRUE, "true"),
+         (token::token_type::SEMICOLON, ";"),
+         (token::token_type::RBRACE, "}"),
+         (token::token_type::ELSE, "else"),
+         (token::token_type::LBRACE, "{"),
+         (token::token_type::RETURN, "return"),
+         (token::token_type::FALSE, "false"),
+         (token::token_type::SEMICOLON, ";"),
+         (token::token_type::RBRACE, "}"),
+    ];
+
+    let l = new(input);
+    for (let i = 0z; i < len(tests); i += 1) {
+        let tok = next_token(&l);
+
+        let test = tests[i];
+        assert(tok.tok_type == test.0, 
+            fmt::asprintf("tests[{}] - tokentype wrong. expected={}, got={}", 
+                i, 
+                token::token_str(test.0), 
+                token::token_str(tok.tok_type)));
+    };
+};

@@ -25,7 +25,12 @@ export type token_type = enum {
     RBRACE,
 
     FUNCTION,
-    LET
+    LET,
+    TRUE,
+    FALSE,
+    IF,
+    ELSE,
+    RETURN
 };
 
 export fn token_str(tok_type: token_type) str = {
@@ -70,6 +75,16 @@ export fn token_str(tok_type: token_type) str = {
             return "FUNCTION";
         case token_type::LET =>
             return "LET";
+        case token_type::TRUE =>
+            return "TRUE";
+        case token_type::FALSE =>
+            return "FALSE";
+        case token_type::IF =>
+            return "IF";
+        case token_type::ELSE =>
+            return "ELSE";
+        case token_type::RETURN =>
+            return "RETURN";
     };
 };
 
@@ -94,7 +109,12 @@ export type keyword = struct {
 
 export let keywords: []keyword = [
     keyword { identifier = "fn", tok_type = token_type::FUNCTION },
-    keyword { identifier = "let", tok_type = token_type::LET }
+    keyword { identifier = "let", tok_type = token_type::LET },
+    keyword { identifier = "true", tok_type = token_type::TRUE },
+    keyword { identifier = "false", tok_type = token_type::FALSE },
+    keyword { identifier = "if", tok_type = token_type::IF },
+    keyword { identifier = "else", tok_type = token_type::ELSE },
+    keyword { identifier = "return", tok_type = token_type::RETURN },
 ];
 
 export fn lookup_ident(ident: str) token_type = {
