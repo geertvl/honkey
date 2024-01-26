@@ -1,3 +1,5 @@
+use strings;
+
 export type token_type = enum {
     ILLEGAL,
     EOF,
@@ -55,9 +57,51 @@ export fn token_str(tok_type: token_type) str = {
 
 export type token = struct {
     tok_type: token_type,
-    literal: rune
+    literal: str
+};
+
+export fn to_string(ch: rune) str = {
+    let s: []rune = [ ch ];
+    return strings::fromrunes(s); 
 };
 
 export fn new(tok_type: token_type, ch: rune) token = {
-    return token { tok_type = tok_type, literal = ch };
+    return token { tok_type = tok_type, literal = to_string(ch) };
+};
+
+export type keyword = struct {
+    identifier: str,
+    tok_type: token_type
+};
+
+export let keywords: []keyword = [
+    keyword { identifier = "fn", tok_type = token_type::FUNCTION },
+    keyword { identifier = "let", tok_type = token_type::LET }
+];
+
+export fn lookup_ident(ident: str) token_type = {
+    for (let i = 0z; i < len(keywords); i += 1) {
+        let kw = keywords[i];
+        if (kw.identifier == ident) {
+            return kw.tok_type;
+        };
+    };
+
+    return token_type::IDENT;
+};
+
+@test fn test_lookup_ident_found() void = {
+    let ident = "let";
+
+    let result = lookup_ident(ident);
+
+    assert(result == token_type::LET);
+};
+
+@test fn test_lookup_ident_not_found() void = {
+    let ident = "five";
+
+    let result = lookup_ident(ident);
+
+    assert(result == token_type::IDENT);
 };
