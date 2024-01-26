@@ -9,6 +9,12 @@ export type token_type = enum {
 
     ASSIGN,
     PLUS,
+    MINUS,
+    BANG,
+    ASTERISK,
+    SLASH,
+    LT,
+    GT,
 
     COMMA,
     SEMICOLON,
@@ -36,6 +42,18 @@ export fn token_str(tok_type: token_type) str = {
             return "=";
         case token_type::PLUS =>
             return "+";
+        case token_type::MINUS =>
+            return "-";
+        case token_type::BANG =>
+            return "!";
+        case token_type::ASTERISK =>
+            return "*";
+        case token_type::SLASH =>
+            return "/";
+        case token_type::LT =>
+            return "<";
+        case token_type::GT =>
+            return ">";
         case token_type::COMMA =>
             return ",";
         case token_type::SEMICOLON =>

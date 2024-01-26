@@ -75,6 +75,18 @@ fn next_token(l: *lexer) token::token = {
             tok = token::new(token::token_type::ASSIGN, l.ch);
         case ';' =>
             tok = token::new(token::token_type::SEMICOLON, l.ch);
+        case '-' =>
+            tok = token::new(token::token_type::MINUS, l.ch);
+        case '!' =>
+            tok = token::new(token::token_type::BANG, l.ch);    
+        case '/' =>
+            tok = token::new(token::token_type::SLASH, l.ch);
+        case '*' =>
+            tok = token::new(token::token_type::ASTERISK, l.ch);
+        case '<' =>
+            tok = token::new(token::token_type::LT, l.ch);
+        case '>' =>
+            tok = token::new(token::token_type::GT, l.ch);
         case '(' => 
             tok = token::new(token::token_type::LPAREN, l.ch);
         case ')' =>
@@ -182,6 +194,38 @@ let result = add(five, ten);";
          (token::token_type::RPAREN, ")"),
          (token::token_type::SEMICOLON, ";"),
          (token::token_type::EOF, "\0"),
+    ];
+
+    let l = new(input);
+    for (let i = 0z; i < len(tests); i += 1) {
+        let tok = next_token(&l);
+
+        let test = tests[i];
+        assert(tok.tok_type == test.0, 
+            fmt::asprintf("tests[{}] - tokentype wrong. expected={}, got={}", 
+                i, 
+                token::token_str(test.0), 
+                token::token_str(tok.tok_type)));
+    };
+};
+
+@test fn test_next_token_other_signs() void = {
+    let input = "!-/*5;
+5 < 10 > 5;";
+
+    let tests: [](token::token_type, str) = [
+         (token::token_type::BANG, "!"),
+         (token::token_type::MINUS, "-"),
+         (token::token_type::SLASH, "/"),
+         (token::token_type::ASTERISK, "*"),
+         (token::token_type::INT, "5"),
+         (token::token_type::SEMICOLON, ";"),
+         (token::token_type::INT, "5"),
+         (token::token_type::LT, "<"),
+         (token::token_type::INT, "10"),
+         (token::token_type::GT, ">"),
+         (token::token_type::INT, "5"),
+         (token::token_type::SEMICOLON, ";")
     ];
 
     let l = new(input);
